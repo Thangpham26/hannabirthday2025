@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Hanna 24/9/2025</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #ffeef6;
+      color: #333;
+      font-size: 1.3em;
+      padding: 0 10px;
+    }
+    h1 {
+      font-size: 2.2em;
+      margin-top: 32px;
+      margin-bottom: 28px;
+    }
+    h2 {
+      font-size: 1.5em;
+      margin-bottom: 20px;
+    }
+    #passwordLayer p,
+    #qrLayer p,
+    #audioLayer h2 {
+      font-size: 1.15em;
+    }
+    input[type="password"],
+    input[type="file"] {
+      font-size: 1.1em;
+      padding: 12px 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin: 10px 0 18px 0;
+      width: 90%;
+      max-width: 320px;
+      box-sizing: border-box;
+    }
+    button {
+      font-size: 1.1em;
+      padding: 13px 28px;
+      border-radius: 8px;
+      border: none;
+      background: #ff69b4;
+      color: #fff;
+      margin-top: 10px;
+      margin-bottom: 18px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:active {
+      background: #e055a1;
+    }
+    #qrLayer, #audioLayer {
+      display: none;
+      margin-top: 28px;
+    }
+    #audioLayer {
+      background: #fff0f5;
+      padding: 24px 10px;
+      border-radius: 12px;
+    }
+    audio {
+      width: 100%;
+      max-width: 350px;
+      margin-top: 18px;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      h1 { font-size: 2.5em; }
+      h2 { font-size: 1.4em; }
+      body { font-size: 1.15em; }
+      #audioLayer { padding: 18px 2px; }
+      input[type="password"], input[type="file"] { font-size: 1.2em; }
+      button { font-size: 1.2em; }
+    }
+  </style>
+</head>
+<body>
+  <h1>💌 Chú gấu biết nói đây 💌</h1>
+  
+  <!-- Password Layer -->
+  <div id="passwordLayer">
+    <p>Mật khẩu là gì đây</p>
+    <input type="password" id="passwordInput" />
+    <button onclick="checkPassword()">Gửi nàaaa</button>
+  </div>
+  
+  <!-- QR Code Layer -->
+  <div id="qrLayer">
+    <h2>Tới khúc này là phải quét mã nà ❤️</h2>
+    <div id="reader" style="width:300px; margin:auto;"></div>
+    <p>Hoặc là em chụp hình rùi gửi cái mã lên đây ngaa:</p>
+    <input type="file" id="fileInput" accept="image/*">
+  </div>
+  
+  <!-- Audio Layer -->
+  <div id="audioLayer">
+    <h2>🎶 Phần này nhân vật chính đây nè</h2>
+    <audio controls autoplay>
+      <source src="Thang.mp3" type="audio/mpeg">
+    </audio>
+  </div>
+  
+  <script>
+    const correctPassword = "hanna20tuoi";  // change password
+    const secretCode = "anhthuongemnhieunhat";  // text inside QR
+
+    // Password check
+    function checkPassword() {
+      const input = document.getElementById("passwordInput").value;
+      if (input === correctPassword) {
+        document.getElementById("passwordLayer").style.display = "none";
+        document.getElementById("qrLayer").style.display = "block";
+      } else {
+        alert("Mật khẩu sai béccc 😢");
+      }
+    }
+
+    // QR camera scan
+    function onScanSuccess(decodedText) {
+      if (decodedText === secretCode) {
+        unlockAudio();
+      } else { 
+        alert("Sai bét rồi è è !!! ");
+      }
+    }
+    const html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+    html5QrcodeScanner.render(onScanSuccess);
+
+    // QR upload scan
+    document.getElementById("fileInput").addEventListener("change", function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function() {
+        const img = new Image();
+        img.src = reader.result;
+        img.onload = function() {
+          const canvas = document.createElement("canvas");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, img.width, img.height);
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const code = jsQR(imageData.data, imageData.width, imageData.height);
+          if (code && code.data === secretCode) {
+            unlockAudio();
+          } else {
+            alert("Sai bét rồi è è !!!");
+          }
+        }
+      }
+      reader.readAsDataURL(file);
+    });
+
+    // Unlock audio layer
+    function unlockAudio() {
+      document.getElementById("qrLayer").style.display = "none";
+      document.getElementById("audioLayer").style.display = "block";
+    }
+  </script>
+</body>
+</html>
